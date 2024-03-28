@@ -1,12 +1,27 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+
+from .models import Post
 
 # Create your views here.
 
-def index(request):
-    return render(request, 'blogAPI/index.html')
+
+def starting_page(request):
+    latest_posts = Post.objects.all().order_by("-date")[:3]
+    return render(request, "blogAPI/index.html", {
+      "posts": latest_posts
+    })
+
 
 def posts(request):
-    pass
+    all_posts = Post.objects.all().order_by("-date")
+    return render(request, "blogAPI/all-posts.html", {
+      "all_posts": all_posts
+    })
 
-def post_detail(request):
-    pass
+
+def post_detail(request, slug):
+    identified_post = get_object_or_404(Post, slug=slug)
+    return render(request, "blogAPI/post-detail.html", {
+      "post": identified_post,
+      "post_tags": identified_post.tags.all()
+    })
